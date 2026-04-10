@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Excel Converter</title>
+
+  <style>
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial;
+  text-align: center;
+
+  background: url("/static/bg.jpg") no-repeat center center fixed;
+  background-size: cover;
+
+  color: white;
+}
+
+    .box {
+      background: rgba(0,0,0,0.7);
+      padding: 30px;
+      border-radius: 15px;
+      display: inline-block;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    }
+
+    input {
+      margin: 20px 0;
+    }
+
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #4CAF50;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 10px;
+    }
+
+    button:hover {
+      background: #45a049;
+    }
+
+    #downloadBtn {
+      display: none;
+      background: #2196F3;
+    }
+
+    #downloadBtn:hover {
+      background: #1976D2;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Hitu Bhai</h1>
+  <h1>📂Hindi To English</h1>
+
+
+  <div class="box">
+
+    <form id="uploadForm">
+      <input type="file" id="fileInput" accept=".xlsx" required><br>
+
+      <button type="submit">⚙️ Upload & Convert</button>
+    </form>
+
+    <button id="downloadBtn">⬇️ Download File</button>
+
+    <p id="status"></p>
+
+  </div>
+
+<script>
+let downloadBlob = null;
+
+document.getElementById("uploadForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const file = document.getElementById("fileInput").files[0];
+
+  if (!file) {
+    alert("Upload file first!");
+    return;
+  }
+
+  document.getElementById("status").innerText = "⏳ Processing...";
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch("/upload", {
+    method: "POST",
+    body: formData
+  });
+
+  const blob = await response.blob();
+  downloadBlob = blob;
+
+  document.getElementById("status").innerText = "✅ Done!";
+  document.getElementById("downloadBtn").style.display = "inline-block";
+});
+
+document.getElementById("downloadBtn").addEventListener("click", function() {
+  if (!downloadBlob) return;
+
+  const url = window.URL.createObjectURL(downloadBlob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "converted.xlsx";
+  a.click();
+
+  window.URL.revokeObjectURL(url);
+});
+</script>
+
+</body>
+</html>
